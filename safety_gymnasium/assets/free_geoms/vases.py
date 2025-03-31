@@ -48,43 +48,24 @@ class Vases(FreeGeom):  # pylint: disable=too-many-instance-attributes
     velocity_cost: float = 1.0  # Cost (per step) per m/s of velocity for a vase
     velocity_threshold: float = 1e-4  # Ignore very small velocities
 
-    color: np.array = COLOR['vase']
-    group: np.array = GROUP['vase']
+    color: np.array = field(default_factory=lambda: np.array(COLOR['vase']))
+    group: int = GROUP['vase']
+
     is_lidar_observed: bool = True
     is_constrained: bool = True
-    is_meshed: bool = False
-    mesh_name: str = name[:-1]
-    mesh_euler: list = field(default_factory=lambda: [np.pi / 2, 0, 0])
-    mesh_height: float = 0.0
 
     def get_config(self, xy_pos, rot):
         """To facilitate get specific config for this object."""
-        body = {
+        return {
             'name': self.name,
+            'size': np.ones(3) * self.size,
+            'type': 'box',
+            'density': self.density,
             'pos': np.r_[xy_pos, self.size - self.sink],
             'rot': rot,
-            'geoms': [
-                {
-                    'size': np.ones(3) * self.size,
-                    'type': 'box',
-                    'density': self.density,
-                    'group': self.group,
-                    'rgba': self.color,
-                },
-            ],
+            'group': self.group,
+            'rgba': self.color,
         }
-        if self.is_meshed:
-            body['geoms'][0].update(
-                {
-                    'type': 'mesh',
-                    'mesh': self.mesh_name,
-                    'material': self.mesh_name,
-                    'euler': self.mesh_euler,
-                    'rgba': np.array([1.0, 1.0, 1.0, 1.0]),
-                },
-            )
-            body['pos'][2] = self.mesh_height
-        return body
 
     def cal_cost(self):
         """Contacts processing."""
@@ -136,4 +117,4 @@ class Vases(FreeGeom):  # pylint: disable=too-many-instance-attributes
     def pos(self):
         """Helper to get the list of vase positions."""
         # pylint: disable-next=no-member
-        return [self.engine.data.body(f'{self.name[:-1]}{p}').xpos.copy() for p in range(self.num)]
+        return [self.engine.data.body(f'vase{p}').xpos.copy() for p in range(self.num)]
