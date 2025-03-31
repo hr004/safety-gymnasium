@@ -41,7 +41,7 @@ class Goal(Geom):  # pylint: disable=too-many-instance-attributes
     reward_distance: float = 1.0  # Dense reward multiplied by the distance moved to the goal
 
     color: np.array = field(default_factory=lambda: np.array(COLOR['goal']))
-    group: np.array = field(default_factory=lambda: np.array(GROUP['goal']))
+    group: int = GROUP['goal']
 
     is_lidar_observed: bool = True
     is_comp_observed: bool = False
