@@ -45,7 +45,7 @@ class Apples(Geom):  # pylint: disable=too-many-instance-attributes
     reward_distance: float = 1.0  # Dense reward multiplied by the distance moved to the goal
 
     color: np.array = field(default_factory=lambda: np.array(COLOR['apple']))
-    group: int = GROUP['apple']
+    group: int = field(default_factory=lambda: GROUP['apple'])
 
     is_lidar_observed: bool = True
     is_constrained: bool = False

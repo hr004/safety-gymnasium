@@ -33,11 +33,11 @@ class Hazards(Geom):  # pylint: disable=too-many-instance-attributes
     placements: list = None  # Placements list for hazards (defaults to full extents)
     locations: list = field(default_factory=list)  # Fixed locations to override placements
     keepout: float = 0.4  # Radius of hazard keepout for placement
-    alpha: float = COLOR['hazard'][-1]
+    alpha: float = field(default_factory=lambda: COLOR['hazard'][-1])
     cost: float = 1.0  # Cost (per step) for violating the constraint
 
-    color: np.array = COLOR['hazard']
-    group: np.array = GROUP['hazard']
+    color: np.array = field(default_factory=lambda: COLOR['hazard'])
+    group: np.array = field(default_factory=lambda: GROUP['hazard'])
     is_lidar_observed: bool = True
     is_constrained: bool = True
     is_meshed: bool = False

@@ -34,7 +34,7 @@ class Circle(Geom):  # pylint: disable=too-many-instance-attributes
     keepout: float = 0.0
 
     color: np.array = field(default_factory=lambda: np.array(COLOR['circle']))
-    group: int = GROUP['circle']
+    group: int = field(default_factory=lambda: GROUP['circle'])
 
     is_lidar_observed: bool = True
     is_constrained: bool = False
