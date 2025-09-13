@@ -185,12 +185,14 @@ class ShadowHandOver_Safe_joint(BaseTask):
         if self.obs_type == 'full_state' or self.asymmetric_obs:
             sensor_tensor = self.gym.acquire_force_sensor_tensor(self.sim)
             self.vec_sensor_tensor = gymtorch.wrap_tensor(sensor_tensor).view(
-                self.num_envs, self.num_fingertips * 6,
+                self.num_envs,
+                self.num_fingertips * 6,
             )
 
             dof_force_tensor = self.gym.acquire_dof_force_tensor(self.sim)
             self.dof_force_tensor = gymtorch.wrap_tensor(dof_force_tensor).view(
-                self.num_envs, self.num_shadow_hand_dofs * 2,
+                self.num_envs,
+                self.num_shadow_hand_dofs * 2,
             )
 
         self.gym.refresh_actor_root_state_tensor(self.sim)
@@ -199,17 +201,21 @@ class ShadowHandOver_Safe_joint(BaseTask):
 
         # create some wrapper tensors for different slices
         self.shadow_hand_default_dof_pos = torch.zeros(
-            self.num_shadow_hand_dofs, dtype=torch.float, device=self.device,
+            self.num_shadow_hand_dofs,
+            dtype=torch.float,
+            device=self.device,
         )
         self.dof_state = gymtorch.wrap_tensor(dof_state_tensor)
         self.shadow_hand_dof_state = self.dof_state.view(self.num_envs, -1, 2)[
-            :, : self.num_shadow_hand_dofs,
+            :,
+            : self.num_shadow_hand_dofs,
         ]
         self.shadow_hand_dof_pos = self.shadow_hand_dof_state[..., 0]
         self.shadow_hand_dof_vel = self.shadow_hand_dof_state[..., 1]
 
         self.shadow_hand_another_dof_state = self.dof_state.view(self.num_envs, -1, 2)[
-            :, self.num_shadow_hand_dofs : self.num_shadow_hand_dofs * 2,
+            :,
+            self.num_shadow_hand_dofs : self.num_shadow_hand_dofs * 2,
         ]
         self.shadow_hand_another_dof_pos = self.shadow_hand_another_dof_state[..., 0]
         self.shadow_hand_another_dof_vel = self.shadow_hand_another_dof_state[..., 1]
@@ -221,14 +227,20 @@ class ShadowHandOver_Safe_joint(BaseTask):
 
         self.num_dofs = self.gym.get_sim_dof_count(self.sim) // self.num_envs
         self.prev_targets = torch.zeros(
-            (self.num_envs, self.num_dofs), dtype=torch.float, device=self.device,
+            (self.num_envs, self.num_dofs),
+            dtype=torch.float,
+            device=self.device,
         )
         self.cur_targets = torch.zeros(
-            (self.num_envs, self.num_dofs), dtype=torch.float, device=self.device,
+            (self.num_envs, self.num_dofs),
+            dtype=torch.float,
+            device=self.device,
         )
 
         self.global_indices = torch.arange(
-            self.num_envs * 3, dtype=torch.int32, device=self.device,
+            self.num_envs * 3,
+            dtype=torch.int32,
+            device=self.device,
         ).view(self.num_envs, -1)
         self.x_unit_tensor = to_torch([1, 0, 0], dtype=torch.float, device=self.device).repeat(
             (self.num_envs, 1),
@@ -254,7 +266,10 @@ class ShadowHandOver_Safe_joint(BaseTask):
         self.up_axis_idx = self.set_sim_params_up_axis(self.sim_params, self.up_axis)
 
         self.sim = super().create_sim(
-            self.device_id, self.graphics_device_id, self.physics_engine, self.sim_params,
+            self.device_id,
+            self.graphics_device_id,
+            self.physics_engine,
+            self.sim_params,
         )
         self._create_ground_plane()
         self._create_envs(self.num_envs, self.cfg['env']['envSpacing'], int(np.sqrt(self.num_envs)))
@@ -288,10 +303,16 @@ class ShadowHandOver_Safe_joint(BaseTask):
         asset_options.default_dof_drive_mode = gymapi.DOF_MODE_NONE
 
         shadow_hand_asset = self.gym.load_asset(
-            self.sim, asset_root, shadow_hand_asset_file, asset_options,
+            self.sim,
+            asset_root,
+            shadow_hand_asset_file,
+            asset_options,
         )
         shadow_hand_another_asset = self.gym.load_asset(
-            self.sim, asset_root, shadow_hand_another_asset_file, asset_options,
+            self.sim,
+            asset_root,
+            shadow_hand_another_asset_file,
+            asset_options,
         )
 
         self.num_shadow_hand_bodies = self.gym.get_asset_rigid_body_count(shadow_hand_asset)
@@ -357,31 +378,43 @@ class ShadowHandOver_Safe_joint(BaseTask):
             self.shadow_hand_dof_default_vel.append(0.0)
 
         self.actuated_dof_indices = to_torch(
-            self.actuated_dof_indices, dtype=torch.long, device=self.device,
+            self.actuated_dof_indices,
+            dtype=torch.long,
+            device=self.device,
         )
         self.shadow_hand_dof_lower_limits = to_torch(
-            self.shadow_hand_dof_lower_limits, device=self.device,
+            self.shadow_hand_dof_lower_limits,
+            device=self.device,
         )
         self.shadow_hand_dof_upper_limits = to_torch(
-            self.shadow_hand_dof_upper_limits, device=self.device,
+            self.shadow_hand_dof_upper_limits,
+            device=self.device,
         )
         self.shadow_hand_dof_default_pos = to_torch(
-            self.shadow_hand_dof_default_pos, device=self.device,
+            self.shadow_hand_dof_default_pos,
+            device=self.device,
         )
         self.shadow_hand_dof_default_vel = to_torch(
-            self.shadow_hand_dof_default_vel, device=self.device,
+            self.shadow_hand_dof_default_vel,
+            device=self.device,
         )
 
         # load manipulated object and goal assets
         object_asset_options = gymapi.AssetOptions()
         object_asset_options.density = 500
         object_asset = self.gym.load_asset(
-            self.sim, asset_root, object_asset_file, object_asset_options,
+            self.sim,
+            asset_root,
+            object_asset_file,
+            object_asset_options,
         )
 
         object_asset_options.disable_gravity = True
         goal_asset = self.gym.load_asset(
-            self.sim, asset_root, object_asset_file, object_asset_options,
+            self.sim,
+            asset_root,
+            object_asset_file,
+            object_asset_options,
         )
 
         shadow_hand_start_pose = gymapi.Transform()
@@ -444,7 +477,9 @@ class ShadowHandOver_Safe_joint(BaseTask):
                 self.gym.create_asset_force_sensor(shadow_hand_asset, ft_handle, sensor_pose)
             for ft_a_handle in self.fingertip_another_handles:
                 self.gym.create_asset_force_sensor(
-                    shadow_hand_another_asset, ft_a_handle, sensor_pose,
+                    shadow_hand_another_asset,
+                    ft_a_handle,
+                    sensor_pose,
                 )
 
         for i in range(self.num_envs):
@@ -456,7 +491,13 @@ class ShadowHandOver_Safe_joint(BaseTask):
 
             # add hand - collision filter = -1 to use asset collision filters set in mjcf loader
             shadow_hand_actor = self.gym.create_actor(
-                env_ptr, shadow_hand_asset, shadow_hand_start_pose, 'hand', i, -1, 0,
+                env_ptr,
+                shadow_hand_asset,
+                shadow_hand_start_pose,
+                'hand',
+                i,
+                -1,
+                0,
             )
             shadow_hand_another_actor = self.gym.create_actor(
                 env_ptr,
@@ -491,10 +532,14 @@ class ShadowHandOver_Safe_joint(BaseTask):
             self.hand_indices.append(hand_idx)
 
             self.gym.set_actor_dof_properties(
-                env_ptr, shadow_hand_another_actor, shadow_hand_another_dof_props,
+                env_ptr,
+                shadow_hand_another_actor,
+                shadow_hand_another_dof_props,
             )
             another_hand_idx = self.gym.get_actor_index(
-                env_ptr, shadow_hand_another_actor, gymapi.DOMAIN_SIM,
+                env_ptr,
+                shadow_hand_another_actor,
+                gymapi.DOMAIN_SIM,
             )
             self.another_hand_indices.append(another_hand_idx)
 
@@ -545,7 +590,13 @@ class ShadowHandOver_Safe_joint(BaseTask):
 
             # add object
             object_handle = self.gym.create_actor(
-                env_ptr, object_asset, object_start_pose, 'object', i, 0, 0,
+                env_ptr,
+                object_asset,
+                object_start_pose,
+                'object',
+                i,
+                0,
+                0,
             )
             self.object_init_state.append(
                 [
@@ -569,17 +620,31 @@ class ShadowHandOver_Safe_joint(BaseTask):
 
             # add goal object
             goal_handle = self.gym.create_actor(
-                env_ptr, goal_asset, goal_start_pose, 'goal_object', i + self.num_envs, 0, 0,
+                env_ptr,
+                goal_asset,
+                goal_start_pose,
+                'goal_object',
+                i + self.num_envs,
+                0,
+                0,
             )
             goal_object_idx = self.gym.get_actor_index(env_ptr, goal_handle, gymapi.DOMAIN_SIM)
             self.goal_object_indices.append(goal_object_idx)
 
             if self.object_type != 'block':
                 self.gym.set_rigid_body_color(
-                    env_ptr, object_handle, 0, gymapi.MESH_VISUAL, gymapi.Vec3(0.6, 0.72, 0.98),
+                    env_ptr,
+                    object_handle,
+                    0,
+                    gymapi.MESH_VISUAL,
+                    gymapi.Vec3(0.6, 0.72, 0.98),
                 )
                 self.gym.set_rigid_body_color(
-                    env_ptr, goal_handle, 0, gymapi.MESH_VISUAL, gymapi.Vec3(0.6, 0.72, 0.98),
+                    env_ptr,
+                    goal_handle,
+                    0,
+                    gymapi.MESH_VISUAL,
+                    gymapi.Vec3(0.6, 0.72, 0.98),
                 )
 
             if self.aggregate_mode > 0:
@@ -589,7 +654,9 @@ class ShadowHandOver_Safe_joint(BaseTask):
             self.shadow_hands.append(shadow_hand_actor)
 
         self.object_init_state = to_torch(
-            self.object_init_state, device=self.device, dtype=torch.float,
+            self.object_init_state,
+            device=self.device,
+            dtype=torch.float,
         ).view(self.num_envs, 13)
         self.goal_states = self.object_init_state.clone()
         self.goal_pose = self.goal_states[:, 0:7]
@@ -598,24 +665,33 @@ class ShadowHandOver_Safe_joint(BaseTask):
         # self.goal_states[:, self.up_axis_idx] -= 0.04
         self.goal_init_state = self.goal_states.clone()
         self.hand_start_states = to_torch(self.hand_start_states, device=self.device).view(
-            self.num_envs, 13,
+            self.num_envs,
+            13,
         )
 
         self.fingertip_handles = to_torch(
-            self.fingertip_handles, dtype=torch.long, device=self.device,
+            self.fingertip_handles,
+            dtype=torch.long,
+            device=self.device,
         )
         self.fingertip_another_handles = to_torch(
-            self.fingertip_another_handles, dtype=torch.long, device=self.device,
+            self.fingertip_another_handles,
+            dtype=torch.long,
+            device=self.device,
         )
 
         self.hand_indices = to_torch(self.hand_indices, dtype=torch.long, device=self.device)
         self.another_hand_indices = to_torch(
-            self.another_hand_indices, dtype=torch.long, device=self.device,
+            self.another_hand_indices,
+            dtype=torch.long,
+            device=self.device,
         )
 
         self.object_indices = to_torch(self.object_indices, dtype=torch.long, device=self.device)
         self.goal_object_indices = to_torch(
-            self.goal_object_indices, dtype=torch.long, device=self.device,
+            self.goal_object_indices,
+            dtype=torch.long,
+            device=self.device,
         )
 
     def compute_reward(self, actions):
@@ -676,10 +752,14 @@ class ShadowHandOver_Safe_joint(BaseTask):
         self.cost_buf = torch.zeros(self.num_envs, device=self.device, dtype=torch.float)
 
         self.cost_buf = torch.where(
-            actions[:, 4] < -0.5, torch.ones_like(self.cost_buf), self.cost_buf,
+            actions[:, 4] < -0.5,
+            torch.ones_like(self.cost_buf),
+            self.cost_buf,
         )
         self.cost_buf = torch.where(
-            actions[:, 4] > 0.5, torch.ones_like(self.cost_buf), self.cost_buf,
+            actions[:, 4] > 0.5,
+            torch.ones_like(self.cost_buf),
+            self.cost_buf,
         )
         return self.cost_buf
 
@@ -705,10 +785,14 @@ class ShadowHandOver_Safe_joint(BaseTask):
         self.fingertip_state = self.rigid_body_states[:, self.fingertip_handles][:, :, 0:13]
         self.fingertip_pos = self.rigid_body_states[:, self.fingertip_handles][:, :, 0:3]
         self.fingertip_another_state = self.rigid_body_states[:, self.fingertip_another_handles][
-            :, :, 0:13,
+            :,
+            :,
+            0:13,
         ]
         self.fingertip_another_pos = self.rigid_body_states[:, self.fingertip_another_handles][
-            :, :, 0:3,
+            :,
+            :,
+            0:3,
         ]
 
         self.compute_full_state()
@@ -778,7 +862,8 @@ class ShadowHandOver_Safe_joint(BaseTask):
 
         fingertip_another_obs_start = another_hand_start + 72
         self.obs_buf[
-            :, fingertip_another_obs_start : fingertip_another_obs_start + num_ft_states,
+            :,
+            fingertip_another_obs_start : fingertip_another_obs_start + num_ft_states,
         ] = self.fingertip_another_state.reshape(self.num_envs, num_ft_states)
         self.obs_buf[
             :,
@@ -792,7 +877,8 @@ class ShadowHandOver_Safe_joint(BaseTask):
 
         action_another_obs_start = fingertip_another_obs_start + 95
         self.obs_buf[:, action_another_obs_start : action_another_obs_start + 20] = self.actions[
-            :, 20:,
+            :,
+            20:,
         ]
 
         obj_obs_start = action_another_obs_start + 20  # 144
@@ -805,7 +891,8 @@ class ShadowHandOver_Safe_joint(BaseTask):
         goal_obs_start = obj_obs_start + 13  # 157 = 144 + 13
         self.obs_buf[:, goal_obs_start : goal_obs_start + 7] = self.goal_pose
         self.obs_buf[:, goal_obs_start + 7 : goal_obs_start + 11] = quat_mul(
-            self.object_rot, quat_conjugate(self.goal_rot),
+            self.object_rot,
+            quat_conjugate(self.goal_rot),
         )
 
     def reset_target_pose(self, env_ids, apply_reset=False):
@@ -825,7 +912,8 @@ class ShadowHandOver_Safe_joint(BaseTask):
             self.goal_states[env_ids, 0:3] + self.goal_displacement_tensor
         )
         self.root_state_tensor[self.goal_object_indices[env_ids], 3:7] = self.goal_states[
-            env_ids, 3:7,
+            env_ids,
+            3:7,
         ]
         self.root_state_tensor[self.goal_object_indices[env_ids], 7:13] = torch.zeros_like(
             self.root_state_tensor[self.goal_object_indices[env_ids], 7:13],
@@ -848,7 +936,10 @@ class ShadowHandOver_Safe_joint(BaseTask):
 
         # generate random values
         rand_floats = torch_rand_float(
-            -1.0, 1.0, (len(env_ids), self.num_shadow_hand_dofs * 2 + 5), device=self.device,
+            -1.0,
+            1.0,
+            (len(env_ids), self.num_shadow_hand_dofs * 2 + 5),
+            device=self.device,
         )
 
         # randomize start object poses
@@ -1024,10 +1115,12 @@ class ShadowHandOver_Safe_joint(BaseTask):
             # self.gym.set_actor_root_state_tensor(self.sim,  gymtorch.unwrap_tensor(self.root_state_tensor))
 
         self.prev_targets[:, self.actuated_dof_indices] = self.cur_targets[
-            :, self.actuated_dof_indices,
+            :,
+            self.actuated_dof_indices,
         ]
         self.prev_targets[:, self.actuated_dof_indices + 24] = self.cur_targets[
-            :, self.actuated_dof_indices + 24,
+            :,
+            self.actuated_dof_indices + 24,
         ]
         self.gym.set_dof_position_target_tensor(self.sim, gymtorch.unwrap_tensor(self.cur_targets))
 
@@ -1049,7 +1142,8 @@ class ShadowHandOver_Safe_joint(BaseTask):
                     (
                         self.goal_pos[i]
                         + quat_apply(
-                            self.goal_rot[i], to_torch([1, 0, 0], device=self.device) * 0.2,
+                            self.goal_rot[i],
+                            to_torch([1, 0, 0], device=self.device) * 0.2,
                         )
                     )
                     .cpu()
@@ -1059,7 +1153,8 @@ class ShadowHandOver_Safe_joint(BaseTask):
                     (
                         self.goal_pos[i]
                         + quat_apply(
-                            self.goal_rot[i], to_torch([0, 1, 0], device=self.device) * 0.2,
+                            self.goal_rot[i],
+                            to_torch([0, 1, 0], device=self.device) * 0.2,
                         )
                     )
                     .cpu()
@@ -1069,7 +1164,8 @@ class ShadowHandOver_Safe_joint(BaseTask):
                     (
                         self.goal_pos[i]
                         + quat_apply(
-                            self.goal_rot[i], to_torch([0, 0, 1], device=self.device) * 0.2,
+                            self.goal_rot[i],
+                            to_torch([0, 0, 1], device=self.device) * 0.2,
                         )
                     )
                     .cpu()
@@ -1103,7 +1199,8 @@ class ShadowHandOver_Safe_joint(BaseTask):
                     (
                         self.object_pos[i]
                         + quat_apply(
-                            self.object_rot[i], to_torch([1, 0, 0], device=self.device) * 0.2,
+                            self.object_rot[i],
+                            to_torch([1, 0, 0], device=self.device) * 0.2,
                         )
                     )
                     .cpu()
@@ -1113,7 +1210,8 @@ class ShadowHandOver_Safe_joint(BaseTask):
                     (
                         self.object_pos[i]
                         + quat_apply(
-                            self.object_rot[i], to_torch([0, 1, 0], device=self.device) * 0.2,
+                            self.object_rot[i],
+                            to_torch([0, 1, 0], device=self.device) * 0.2,
                         )
                     )
                     .cpu()
@@ -1123,7 +1221,8 @@ class ShadowHandOver_Safe_joint(BaseTask):
                     (
                         self.object_pos[i]
                         + quat_apply(
-                            self.object_rot[i], to_torch([0, 0, 1], device=self.device) * 0.2,
+                            self.object_rot[i],
+                            to_torch([0, 0, 1], device=self.device) * 0.2,
                         )
                     )
                     .cpu()
@@ -1204,7 +1303,9 @@ def compute_hand_reward(
 
     # Find out which envs hit the goal and update successes count
     goal_resets = torch.where(
-        torch.abs(goal_dist) <= 0, torch.ones_like(reset_goal_buf), reset_goal_buf,
+        torch.abs(goal_dist) <= 0,
+        torch.ones_like(reset_goal_buf),
+        reset_goal_buf,
     )
     successes = successes + goal_resets
 
@@ -1219,17 +1320,23 @@ def compute_hand_reward(
     if max_consecutive_successes > 0:
         # Reset progress buffer on goal envs if max_consecutive_successes > 0
         progress_buf = torch.where(
-            torch.abs(rot_dist) <= success_tolerance, torch.zeros_like(progress_buf), progress_buf,
+            torch.abs(rot_dist) <= success_tolerance,
+            torch.zeros_like(progress_buf),
+            progress_buf,
         )
         resets = torch.where(
-            successes >= max_consecutive_successes, torch.ones_like(resets), resets,
+            successes >= max_consecutive_successes,
+            torch.ones_like(resets),
+            resets,
         )
     resets = torch.where(progress_buf >= max_episode_length, torch.ones_like(resets), resets)
 
     # Apply penalty for not reaching the goal
     if max_consecutive_successes > 0:
         reward = torch.where(
-            progress_buf >= max_episode_length, reward + 0.5 * fall_penalty, reward,
+            progress_buf >= max_episode_length,
+            reward + 0.5 * fall_penalty,
+            reward,
         )
 
     num_resets = torch.sum(resets)

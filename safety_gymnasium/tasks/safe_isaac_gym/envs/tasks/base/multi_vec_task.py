@@ -186,7 +186,9 @@ class ShadowHandMultiVecTaskPython(ShadowHandMultiVecTask):
         obs_buf = torch.clamp(self.task.obs_buf, -self.clip_obs, self.clip_obs).to(self.rl_device)
         # self.process_sub_agent_obs(self.agent_dof_index, self.agent_finger_index, obs_buf)
         hand_obs.append(
-            torch.cat([obs_buf[:, : self.num_hand_obs], obs_buf[:, 2 * self.num_hand_obs :]], dim=1),
+            torch.cat(
+                [obs_buf[:, : self.num_hand_obs], obs_buf[:, 2 * self.num_hand_obs :]], dim=1,
+            ),
         )
         hand_obs.append(
             torch.cat(
@@ -246,7 +248,9 @@ class ShadowHandMultiVecTaskPython(ShadowHandMultiVecTask):
         hand_obs = []
         obs_buf = torch.clamp(self.task.obs_buf, -self.clip_obs, self.clip_obs)
         hand_obs.append(
-            torch.cat([obs_buf[:, : self.num_hand_obs], obs_buf[:, 2 * self.num_hand_obs :]], dim=1),
+            torch.cat(
+                [obs_buf[:, : self.num_hand_obs], obs_buf[:, 2 * self.num_hand_obs :]], dim=1,
+            ),
         )
         hand_obs.append(
             torch.cat(

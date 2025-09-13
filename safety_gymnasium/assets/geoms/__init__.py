@@ -28,4 +28,15 @@ from safety_gymnasium.assets.geoms.staged_goal import StagedGoal
 from safety_gymnasium.assets.geoms.walls import Walls
 
 
-GEOMS_REGISTER = [Apples, Buttons, Circle, Goal, Hazards, Oranges, Pillars, Walls, Sigwalls, StagedGoal]
+GEOMS_REGISTER = [
+    Apples,
+    Buttons,
+    Circle,
+    Goal,
+    Hazards,
+    Oranges,
+    Pillars,
+    Walls,
+    Sigwalls,
+    StagedGoal,
+]

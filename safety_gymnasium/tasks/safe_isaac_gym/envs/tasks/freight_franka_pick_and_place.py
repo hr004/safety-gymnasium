@@ -52,7 +52,8 @@ class FreightFrankaPickAndPlace(BaseTask):
 
         self.env_num = self.env_num_train
         self.asset_root = os.path.dirname(os.path.abspath(__file__)).replace(
-            'envs/tasks', 'envs/assets',
+            'envs/tasks',
+            'envs/assets',
         )
         self.num_train = cfg['env']['asset']['AssetNumTrain']
 
@@ -123,19 +124,34 @@ class FreightFrankaPickAndPlace(BaseTask):
         franka1_actor = self.franka_actor_list[0]
         obj_actor = self.obj_actor_list[0]
         self.hand_rigid_body_index = self.gym.find_actor_rigid_body_index(
-            env_ptr, franka1_actor, 'panda_hand', gymapi.DOMAIN_ENV,
+            env_ptr,
+            franka1_actor,
+            'panda_hand',
+            gymapi.DOMAIN_ENV,
         )
         self.freight_rigid_body_index = self.gym.find_actor_rigid_body_index(
-            env_ptr, franka1_actor, 'base_link', gymapi.DOMAIN_ENV,
+            env_ptr,
+            franka1_actor,
+            'base_link',
+            gymapi.DOMAIN_ENV,
         )
         self.hand_lfinger_rigid_body_index = self.gym.find_actor_rigid_body_index(
-            env_ptr, franka1_actor, 'panda_leftfinger', gymapi.DOMAIN_ENV,
+            env_ptr,
+            franka1_actor,
+            'panda_leftfinger',
+            gymapi.DOMAIN_ENV,
         )
         self.hand_rfinger_rigid_body_index = self.gym.find_actor_rigid_body_index(
-            env_ptr, franka1_actor, 'panda_rightfinger', gymapi.DOMAIN_ENV,
+            env_ptr,
+            franka1_actor,
+            'panda_rightfinger',
+            gymapi.DOMAIN_ENV,
         )
         self.object_rigid_body_index = self.gym.find_actor_rigid_body_index(
-            env_ptr, obj_actor, str(8), gymapi.DOMAIN_ENV,
+            env_ptr,
+            obj_actor,
+            str(8),
+            gymapi.DOMAIN_ENV,
         )
 
         self.hand_rigid_body_tensor = self.rigid_body_tensor[:, self.hand_rigid_body_index, :]
@@ -180,7 +196,10 @@ class FreightFrankaPickAndPlace(BaseTask):
         self.up_axis_idx = self.set_sim_params_up_axis(self.sim_params, self.up_axis)
 
         self.sim = super().create_sim(
-            self.device_id, self.graphics_device_id, self.physics_engine, self.sim_params,
+            self.device_id,
+            self.graphics_device_id,
+            self.physics_engine,
+            self.sim_params,
         )
         self._create_ground_plane()
         self._place_agents(self.cfg['env']['numEnvs'], self.cfg['env']['envSpacing'])
@@ -216,16 +235,20 @@ class FreightFrankaPickAndPlace(BaseTask):
         ) = self._get_dof_property(self.franka_asset)
         self.franka_dof_max_torque_tensor = torch.tensor(franka_dof_max_torque, device=self.device)
         self.franka_dof_mean_limits_tensor = torch.tensor(
-            (franka_dof_lower_limits + franka_dof_upper_limits) / 2, device=self.device,
+            (franka_dof_lower_limits + franka_dof_upper_limits) / 2,
+            device=self.device,
         )
         self.franka_dof_limits_range_tensor = torch.tensor(
-            (franka_dof_upper_limits - franka_dof_lower_limits) / 2, device=self.device,
+            (franka_dof_upper_limits - franka_dof_lower_limits) / 2,
+            device=self.device,
         )
         self.franka_dof_lower_limits_tensor = torch.tensor(
-            franka_dof_lower_limits, device=self.device,
+            franka_dof_lower_limits,
+            device=self.device,
         )
         self.franka_dof_upper_limits_tensor = torch.tensor(
-            franka_dof_upper_limits, device=self.device,
+            franka_dof_upper_limits,
+            device=self.device,
         )
 
         dof_props = self.gym.get_asset_dof_properties(self.franka_asset)
@@ -255,7 +278,13 @@ class FreightFrankaPickAndPlace(BaseTask):
         franka_dof_state['pos'] = default_dof_pos
 
         franka_actor = self.gym.create_actor(
-            env_ptr, self.franka_asset, initial_franka_pose, 'franka', env_id, 1, 0,
+            env_ptr,
+            self.franka_asset,
+            initial_franka_pose,
+            'franka',
+            env_id,
+            1,
+            0,
         )
 
         # rigid props
@@ -513,7 +542,9 @@ class FreightFrankaPickAndPlace(BaseTask):
             * 3
         )
         success = torch.where(
-            pick, target_d < 0.1, (torch.zeros_like(target_d, device=self.device)).to(torch.bool),
+            pick,
+            target_d < 0.1,
+            (torch.zeros_like(target_d, device=self.device)).to(torch.bool),
         ).to(self.device)
         self.success_reward = success * 2
         self.rew_buf = (
@@ -538,7 +569,9 @@ class FreightFrankaPickAndPlace(BaseTask):
         time_out = self.progress_buf >= self.max_episode_length
         self.reset_buf = self.reset_buf | time_out
         self.reset_buf = torch.where(
-            obj_pos[:, 2] < 0.1, torch.ones_like(self.reset_buf, device=self.device), self.reset_buf,
+            obj_pos[:, 2] < 0.1,
+            torch.ones_like(self.reset_buf, device=self.device),
+            self.reset_buf,
         )
 
         self.success_buf = self.success_buf | success
@@ -592,7 +625,8 @@ class FreightFrankaPickAndPlace(BaseTask):
         # hand
         state[:, joints * 2 + 13 : joints * 2 + 26].copy_(
             relative_pose(self.franka_root_tensor, self.hand_rigid_body_tensor).view(
-                self.env_num, -1,
+                self.env_num,
+                -1,
             ),
         )
         # actions
@@ -625,10 +659,12 @@ class FreightFrankaPickAndPlace(BaseTask):
         self.eff_act[:, -2] = actions[:, -2] * self.franka_dof_max_torque_tensor[-2]
         self.eff_act[:, -1] = actions[:, -1] * self.franka_dof_max_torque_tensor[-1]
         self.gym.set_dof_position_target_tensor(
-            self.sim, gymtorch.unwrap_tensor(self.pos_act.view(-1)),
+            self.sim,
+            gymtorch.unwrap_tensor(self.pos_act.view(-1)),
         )
         self.gym.set_dof_actuation_force_tensor(
-            self.sim, gymtorch.unwrap_tensor(self.eff_act.view(-1)),
+            self.sim,
+            gymtorch.unwrap_tensor(self.eff_act.view(-1)),
         )
 
     def _draw_line(self, src, dst):
@@ -733,7 +769,8 @@ class FreightFrankaPickAndPlace(BaseTask):
                     self.franka_dof_upper_limits_tensor,
                 )
                 self.intervaledRandom_(
-                    franka_reset_dof_vel_tensor, self.franka_reset_dof_vel_interval,
+                    franka_reset_dof_vel_tensor,
+                    self.franka_reset_dof_vel_interval,
                 )
 
                 self.dof_state_tensor[env_id].copy_(reset_dof_states)

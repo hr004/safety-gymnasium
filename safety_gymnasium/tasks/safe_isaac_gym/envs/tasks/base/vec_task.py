@@ -23,7 +23,8 @@ class VecTask:
 
         self.obs_space = spaces.Box(np.ones(self.num_obs) * -np.Inf, np.ones(self.num_obs) * np.Inf)
         self.state_space = spaces.Box(
-            np.ones(self.num_states) * -np.Inf, np.ones(self.num_states) * np.Inf,
+            np.ones(self.num_states) * -np.Inf,
+            np.ones(self.num_states) * np.Inf,
         )
         self.act_space = spaces.Box(
             np.ones(self.num_actions) * task.franka_dof_lower_limits_tensor.cpu().numpy(),
