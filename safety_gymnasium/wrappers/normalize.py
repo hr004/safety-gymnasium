@@ -17,7 +17,35 @@
 
 import gymnasium
 import numpy as np
-from gymnasium.wrappers.normalize import NormalizeObservation, NormalizeReward, RunningMeanStd
+from gymnasium.wrappers import NormalizeObservation, NormalizeReward
+
+
+class RunningMeanStd:
+    """Running mean and standard deviation calculator."""
+    
+    def __init__(self, shape=()):
+        self.mean = np.zeros(shape, dtype=np.float64)
+        self.var = np.ones(shape, dtype=np.float64)
+        self.count = 0
+        
+    def update(self, x):
+        """Update running mean and variance."""
+        batch_mean = np.mean(x, axis=0)
+        batch_var = np.var(x, axis=0)
+        batch_count = x.shape[0] if x.ndim > 0 else 1
+        
+        delta = batch_mean - self.mean
+        tot_count = self.count + batch_count
+        
+        new_mean = self.mean + delta * batch_count / tot_count
+        m_a = self.var * self.count
+        m_b = batch_var * batch_count
+        m2 = m_a + m_b + delta**2 * self.count * batch_count / tot_count
+        new_var = m2 / tot_count
+        
+        self.mean = new_mean
+        self.var = new_var
+        self.count = tot_count
 
 
 class SafeNormalizeObservation(NormalizeObservation):

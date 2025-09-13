@@ -49,13 +49,15 @@ class PushBox(FreeGeom):  # pylint: disable=too-many-instance-attributes
         """To facilitate get specific config for this object."""
         return {
             'name': 'push_box',
-            'type': 'box',
-            'size': np.ones(3) * self.size,
             'pos': np.r_[xy_pos, self.size],
             'rot': rot,
-            'density': self.density,
-            'group': self.group,
-            'rgba': self.color,
+            'geoms': [{
+                'type': 'box',
+                'size': np.ones(3) * self.size,
+                'density': self.density,
+                'group': self.group,
+                'rgba': self.color,
+            }]
         }
 
     def _specific_agent_config(self):

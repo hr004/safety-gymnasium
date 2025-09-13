@@ -577,7 +577,7 @@ class Underlying(abc.ABC):  # pylint: disable=too-many-instance-attributes
                     self.agent.keyboard_control_callback,
                 )
             elif mode in {'rgb_array', 'depth_array'}:
-                self.viewer = OffScreenViewer(self.model, self.data)
+                self.viewer = OffScreenViewer(self.model, self.data, width=256, height=256)
             else:
                 raise AttributeError(f'Unexpected mode: {mode}')
 

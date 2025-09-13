@@ -15,7 +15,7 @@
 """Wrapper for limiting the time steps of an environment."""
 
 
-from gymnasium.wrappers.autoreset import AutoResetWrapper
+from gymnasium.wrappers import Autoreset as AutoResetWrapper
 
 
 class SafeAutoResetWrapper(AutoResetWrapper):

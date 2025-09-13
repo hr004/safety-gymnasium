@@ -186,7 +186,7 @@ class RandomGenerator:
 
     def random_rot(self) -> float:
         """Use internal random state to get a random rotation in radians."""
-        return self.random_generator.uniform(0, 2 * np.pi)
+        return float(self.random_generator.uniform(0, 2 * np.pi))
 
     def choice(self, *args, **kwargs) -> np.ndarray:
         """Wrapper for :meth:`np.random.RandomState.choice`."""

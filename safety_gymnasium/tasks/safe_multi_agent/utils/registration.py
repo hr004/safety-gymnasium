@@ -25,7 +25,6 @@ from gymnasium.envs.registration import spec  # noqa: F401 # pylint: disable=unu
 from gymnasium.envs.registration import EnvSpec, _check_metadata, _find_spec, load_env_creator
 from gymnasium.envs.registration import register as gymnasium_register
 from gymnasium.wrappers import HumanRendering, OrderEnforcing, RenderCollection
-from gymnasium.wrappers.compatibility import EnvCompatibility
 
 from safety_gymnasium.wrappers import SafeAutoResetWrapper, SafePassiveEnvChecker, SafeTimeLimit
 
@@ -187,11 +186,11 @@ def make(
                 f'the saved `EnvSpec` additional wrapper {env_spec_wrapper_spec}',
             )
 
-    # Add step API wrapper
-    if apply_api_compatibility is True or (
-        apply_api_compatibility is None and env_spec.apply_api_compatibility is True
-    ):
-        env = EnvCompatibility(env, render_mode)
+    # Add step API wrapper - EnvCompatibility wrapper is no longer available in current gymnasium
+    # if apply_api_compatibility is True or (
+    #     apply_api_compatibility is None and env_spec.apply_api_compatibility is True
+    # ):
+    #     env = EnvCompatibility(env, render_mode)
 
     # Run the environment checker as the lowest level wrapper
     if disable_env_checker is False or (

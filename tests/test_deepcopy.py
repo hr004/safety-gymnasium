@@ -19,6 +19,7 @@ from copy import deepcopy
 import gymnasium
 import numpy as np
 
+import safety_gymnasium  # Import to register environments
 import helpers
 
 

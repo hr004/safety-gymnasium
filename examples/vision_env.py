@@ -39,6 +39,7 @@ def run_random(env_name):
             print(f'Episode Return: {ep_ret} \t Episode Cost: {ep_cost}')
             ep_ret, ep_cost = 0, 0
             obs, info = env.reset()  # pylint: disable=unused-variable
+            terminated, truncated = False, False  # Reset the flags
             save_video(
                 frames=render_list,
                 video_folder=DIR,

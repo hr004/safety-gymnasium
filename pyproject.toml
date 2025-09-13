@@ -25,10 +25,10 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
-    "gymnasium",
+    "gymnasium[other] >= 1.2.0",
     "gymnasium-robotics",
-    "pygame == 2.6.0",
-    "mujoco", 
+    "pygame >= 2.6.0",
+    "mujoco >= 3.0.0", 
     "xmltodict >= 0.13.0",
     "pyyaml >= 6.0",
     "imageio >= 2.27.0",
@@ -74,7 +74,7 @@ safe = true
 line-length = 100
 skip-string-normalization = true
 # Sync with requires-python
-target-version = ["py38", "py39", "py310", "py311"]
+target-version = ["py310", "py311", "py312", "py313"]
 
 [tool.isort]
 atomic = true
@@ -87,7 +87,7 @@ lines_after_imports = 2
 multi_line_output = 3
 
 [tool.mypy]
-python_version = 3.8
+python_version = 3.13
 pretty = true
 show_error_codes = true
 show_error_context = true

@@ -34,14 +34,14 @@ def run_random(env_name):
             obs, _ = env.reset()
 
         act = {}
-        for agent in env.agents:
+        for agent in env.unwrapped.possible_agents:
             assert env.observation_space(agent).contains(obs[agent])
             act[agent] = env.action_space(agent).sample()
             assert env.action_space(agent).contains(act[agent])
 
         obs, reward, cost, terminated, truncated, _ = env.step(act)
 
-        for agent in env.agents:
+        for agent in env.unwrapped.possible_agents:
             ep_ret += reward[agent]
             ep_cost += cost[agent]
 

@@ -100,7 +100,7 @@ class BaseObject(abc.ABC):
         """
         self.random_generator = random_generator
 
-    def process_config(self, config: dict, layout: dict, rots: float) -> None:
+    def process_config(self, config: dict, layout: dict, rots: list) -> None:
         """Process the config.
 
         Note:

@@ -316,6 +316,7 @@ class World:  # pylint: disable=too-many-instance-attributes
                 object['geoms'][0]['width'] = dim / 2
                 object['geoms'][0]['x'] = dim
                 object['geoms'][0]['y'] = dim
+                object['geoms'][0]['name'] = name
                 # pylint: disable-next=consider-using-f-string
                 collision_xml = """
                         <freejoint name="{name}"/>
