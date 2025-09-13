@@ -155,7 +155,7 @@ class ObjectNavTask(AbstractSPOCTask):
         ]
         if not strict_success:
             return len(visible_targets) > 0
-        elif len(visible_targets) == 0:
+        if len(visible_targets) == 0:
             return False
 
         return is_any_object_sufficiently_visible_and_in_center_frame(

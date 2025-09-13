@@ -15,6 +15,7 @@
 """Circle."""
 
 from dataclasses import dataclass, field
+
 import numpy as np
 
 from safety_gymnasium.tasks.safe_multi_agent.assets.color import COLOR

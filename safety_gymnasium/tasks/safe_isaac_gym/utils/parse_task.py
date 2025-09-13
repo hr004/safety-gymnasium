@@ -7,31 +7,14 @@
 
 import json
 
-from safety_gymnasium.tasks.safe_isaac_gym.envs.tasks.freight_franka_close_drawer import (
-    FreightFrankaCloseDrawer,
-    FreightFrankaPickAndPlace,
-)
 from safety_gymnasium.tasks.safe_isaac_gym.envs.tasks.hand_base.multi_vec_task import (
     MultiVecTaskPython,
-    SingleVecTaskPythonArm,
 )
 from safety_gymnasium.tasks.safe_isaac_gym.envs.tasks.hand_base.vec_task import (
     VecTaskCPU,
     VecTaskGPU,
     VecTaskPython,
     VecTaskPythonArm,
-)
-from safety_gymnasium.tasks.safe_isaac_gym.envs.tasks.ShadowHandCatchOver2underarm_Safe_finger import (
-    ShadowHandCatchOver2Underarm_Safe_finger,
-)
-from safety_gymnasium.tasks.safe_isaac_gym.envs.tasks.ShadowHandCatchOver2underarm_Safe_joint import (
-    ShadowHandCatchOver2Underarm_Safe_joint,
-)
-from safety_gymnasium.tasks.safe_isaac_gym.envs.tasks.ShadowHandOver_Safe_finger import (
-    ShadowHandOver_Safe_finger,
-)
-from safety_gymnasium.tasks.safe_isaac_gym.envs.tasks.ShadowHandOver_Safe_joint import (
-    ShadowHandOver_Safe_joint,
 )
 from safety_gymnasium.tasks.safe_isaac_gym.utils.config import warn_task_name
 

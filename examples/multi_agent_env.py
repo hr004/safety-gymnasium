@@ -34,7 +34,7 @@ def run_random(scenario, agent_conf):
             obs, _ = env.reset()
 
         act = {}
-        for agent in env.agents:
+        for agent in env.unwrapped.possible_agents:
             assert env.observation_space(agent).contains(obs[agent])
             act[agent] = env.action_space(agent).sample()
             assert env.action_space(agent).contains(act[agent])

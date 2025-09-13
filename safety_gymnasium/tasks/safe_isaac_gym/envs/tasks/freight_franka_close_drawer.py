@@ -1,11 +1,10 @@
 import json
 import os
-from random import randint, shuffle
-from time import time
+from random import shuffle
 
 import numpy as np
 import yaml
-from isaacgym import gymapi, gymtorch, gymutil
+from isaacgym import gymapi, gymtorch
 from isaacgym.torch_utils import *
 from tqdm import tqdm
 
@@ -54,7 +53,8 @@ class FreightFrankaCloseDrawer(BaseTask):
         self.env_num_train = cfg['env']['numEnvs']
         self.env_num = self.env_num_train
         self.asset_root = os.path.dirname(os.path.abspath(__file__)).replace(
-            'envs/tasks', 'envs/assets'
+            'envs/tasks',
+            'envs/assets',
         )
         self.cabinet_num_train = cfg['env']['asset']['cabinetAssetNumTrain']
         self.cabinet_num = self.cabinet_num_train
@@ -81,10 +81,12 @@ class FreightFrankaCloseDrawer(BaseTask):
             self.cabinet_train_name_list.append(cfg['env']['asset']['trainAssets'][name]['name'])
 
         self.cabinet_dof_lower_limits_tensor = torch.zeros(
-            (self.cabinet_num, 1), device=self.device
+            (self.cabinet_num, 1),
+            device=self.device,
         )
         self.cabinet_dof_upper_limits_tensor = torch.zeros(
-            (self.cabinet_num, 1), device=self.device
+            (self.cabinet_num, 1),
+            device=self.device,
         )
         self.cabinet_handle_pos_tensor = torch.zeros((self.cabinet_num, 3), device=self.device)
         self.cabinet_have_handle_tensor = torch.zeros((self.cabinet_num,), device=self.device)
@@ -108,13 +110,13 @@ class FreightFrankaCloseDrawer(BaseTask):
         self.root_tensor = gymtorch.wrap_tensor(self.gym.acquire_actor_root_state_tensor(self.sim))
         self.dof_state_tensor = gymtorch.wrap_tensor(self.gym.acquire_dof_state_tensor(self.sim))
         self.rigid_body_tensor = gymtorch.wrap_tensor(
-            self.gym.acquire_rigid_body_state_tensor(self.sim)
+            self.gym.acquire_rigid_body_state_tensor(self.sim),
         )
         if (
             self.cfg['env']['driveMode'] == 'ik'
         ):  # inverse kinetic needs jacobian tensor, other drive mode don't need
             self.jacobian_tensor = gymtorch.wrap_tensor(
-                self.gym.acquire_jacobian_tensor(self.sim, 'franka')
+                self.gym.acquire_jacobian_tensor(self.sim, 'franka'),
             )
 
         self.gym.refresh_actor_root_state_tensor(self.sim)
@@ -135,25 +137,46 @@ class FreightFrankaCloseDrawer(BaseTask):
         franka1_actor = self.franka_actor_list[0]
         cabinet_actor = self.cabinet_actor_list[0]
         self.hand_rigid_body_index = self.gym.find_actor_rigid_body_index(
-            env_ptr, franka1_actor, 'panda_hand', gymapi.DOMAIN_ENV
+            env_ptr,
+            franka1_actor,
+            'panda_hand',
+            gymapi.DOMAIN_ENV,
         )
         self.freight_rigid_body_index = self.gym.find_actor_rigid_body_index(
-            env_ptr, franka1_actor, 'base_link', gymapi.DOMAIN_ENV
+            env_ptr,
+            franka1_actor,
+            'base_link',
+            gymapi.DOMAIN_ENV,
         )
         self.hand_lfinger_rigid_body_index = self.gym.find_actor_rigid_body_index(
-            env_ptr, franka1_actor, 'panda_leftfinger', gymapi.DOMAIN_ENV
+            env_ptr,
+            franka1_actor,
+            'panda_leftfinger',
+            gymapi.DOMAIN_ENV,
         )
         self.hand_rfinger_rigid_body_index = self.gym.find_actor_rigid_body_index(
-            env_ptr, franka1_actor, 'panda_rightfinger', gymapi.DOMAIN_ENV
+            env_ptr,
+            franka1_actor,
+            'panda_rightfinger',
+            gymapi.DOMAIN_ENV,
         )
         self.cabinet_rigid_body_index = self.gym.find_actor_rigid_body_index(
-            env_ptr, cabinet_actor, self.cabinet_rig_name, gymapi.DOMAIN_ENV
+            env_ptr,
+            cabinet_actor,
+            self.cabinet_rig_name,
+            gymapi.DOMAIN_ENV,
         )
         self.cabinet_base_rigid_body_index = self.gym.find_actor_rigid_body_index(
-            env_ptr, cabinet_actor, self.cabinet_base_rig_name, gymapi.DOMAIN_ENV
+            env_ptr,
+            cabinet_actor,
+            self.cabinet_base_rig_name,
+            gymapi.DOMAIN_ENV,
         )
         self.cabinet_dof_index = self.gym.find_actor_dof_index(
-            env_ptr, cabinet_actor, self.cabinet_dof_name, gymapi.DOMAIN_ENV
+            env_ptr,
+            cabinet_actor,
+            self.cabinet_dof_name,
+            gymapi.DOMAIN_ENV,
         )
 
         self.hand_rigid_body_tensor = self.rigid_body_tensor[:, self.hand_rigid_body_index, :]
@@ -161,7 +184,9 @@ class FreightFrankaCloseDrawer(BaseTask):
         self.cabinet_dof_tensor = self.dof_state_tensor[:, self.cabinet_dof_index, :]
         self.cabinet_dof_tensor_spec = self._detailed_view(self.cabinet_dof_tensor)
         self.cabinet_door_rigid_body_tensor = self.rigid_body_tensor[
-            :, self.cabinet_rigid_body_index, :
+            :,
+            self.cabinet_rigid_body_index,
+            :,
         ]
         self.franka_root_tensor = self.root_tensor[:, 0, :]
         self.cabinet_root_tensor = self.root_tensor[:, 1, :]
@@ -176,8 +201,13 @@ class FreightFrankaCloseDrawer(BaseTask):
         self.cabinet_dof_coef = -1.0
         self.success_dof_states = self.cabinet_dof_lower_limits_tensor[:, 0].clone()
         self.initial_dof_states.view(self.cabinet_num, self.env_per_cabinet, -1, 2)[
-            :, :, self.cabinet_dof_index, 0
-        ] = (torch.ones((self.cabinet_num, 1), device=self.device) * 0.2)
+            :,
+            :,
+            self.cabinet_dof_index,
+            0,
+        ] = (
+            torch.ones((self.cabinet_num, 1), device=self.device) * 0.2
+        )
 
         self.map_dis_bar = cfg['env']['map_dis_bar']
         self.action_speed_scale = cfg['env']['actionSpeedScale']
@@ -218,7 +248,10 @@ class FreightFrankaCloseDrawer(BaseTask):
         self.up_axis_idx = self.set_sim_params_up_axis(self.sim_params, self.up_axis)
 
         self.sim = super().create_sim(
-            self.device_id, self.graphics_device_id, self.physics_engine, self.sim_params
+            self.device_id,
+            self.graphics_device_id,
+            self.physics_engine,
+            self.sim_params,
         )
         self._create_ground_plane()
         self._place_agents(self.cfg['env']['numEnvs'], self.cfg['env']['envSpacing'])
@@ -264,16 +297,20 @@ class FreightFrankaCloseDrawer(BaseTask):
         ) = self._get_dof_property(self.franka_asset)
         self.franka_dof_max_torque_tensor = torch.tensor(franka_dof_max_torque, device=self.device)
         self.franka_dof_mean_limits_tensor = torch.tensor(
-            (franka_dof_lower_limits + franka_dof_upper_limits) / 2, device=self.device
+            (franka_dof_lower_limits + franka_dof_upper_limits) / 2,
+            device=self.device,
         )
         self.franka_dof_limits_range_tensor = torch.tensor(
-            (franka_dof_upper_limits - franka_dof_lower_limits) / 2, device=self.device
+            (franka_dof_upper_limits - franka_dof_lower_limits) / 2,
+            device=self.device,
         )
         self.franka_dof_lower_limits_tensor = torch.tensor(
-            franka_dof_lower_limits, device=self.device
+            franka_dof_lower_limits,
+            device=self.device,
         )
         self.franka_dof_upper_limits_tensor = torch.tensor(
-            franka_dof_upper_limits, device=self.device
+            franka_dof_upper_limits,
+            device=self.device,
         )
 
         dof_props = self.gym.get_asset_dof_properties(self.franka_asset)
@@ -300,7 +337,13 @@ class FreightFrankaCloseDrawer(BaseTask):
         franka_dof_state['pos'] = default_dof_pos
 
         franka_actor = self.gym.create_actor(
-            env_ptr, self.franka_asset, initial_franka_pose, 'franka', env_id, 1, 0
+            env_ptr,
+            self.franka_asset,
+            initial_franka_pose,
+            'franka',
+            env_id,
+            1,
+            0,
         )
 
         self.gym.set_actor_dof_properties(env_ptr, franka_actor, dof_props)
@@ -376,7 +419,10 @@ class FreightFrankaCloseDrawer(BaseTask):
                 asset_options.vhacd_params.resolution = 512
 
                 cabinet_asset = self.gym.load_asset(
-                    self.sim, self.asset_root, val['path'], asset_options
+                    self.sim,
+                    self.asset_root,
+                    val['path'],
+                    asset_options,
                 )
                 self.cabinet_asset_list.append(cabinet_asset)
 
@@ -402,10 +448,12 @@ class FreightFrankaCloseDrawer(BaseTask):
 
                 max_torque, lower_limits, upper_limits = self._get_dof_property(cabinet_asset)
                 self.cabinet_dof_lower_limits_tensor[cur, :] = torch.tensor(
-                    lower_limits[0], device=self.device
+                    lower_limits[0],
+                    device=self.device,
                 )
                 self.cabinet_dof_upper_limits_tensor[cur, :] = torch.tensor(
-                    upper_limits[0], device=self.device
+                    upper_limits[0],
+                    device=self.device,
                 )
 
                 dataset_path = self.cfg['env']['asset']['datasetPath']
@@ -453,19 +501,24 @@ class FreightFrankaCloseDrawer(BaseTask):
             self._load_obj_asset()
 
             self.cabinet_handle_pos_tensor = self.cabinet_handle_pos_tensor.repeat_interleave(
-                self.env_per_cabinet, dim=0
+                self.env_per_cabinet,
+                dim=0,
             )
             self.cabinet_have_handle_tensor = self.cabinet_have_handle_tensor.repeat_interleave(
-                self.env_per_cabinet, dim=0
+                self.env_per_cabinet,
+                dim=0,
             )
             self.cabinet_open_dir_tensor = self.cabinet_open_dir_tensor.repeat_interleave(
-                self.env_per_cabinet, dim=0
+                self.env_per_cabinet,
+                dim=0,
             )
             self.cabinet_door_min_tensor = self.cabinet_door_min_tensor.repeat_interleave(
-                self.env_per_cabinet, dim=0
+                self.env_per_cabinet,
+                dim=0,
             )
             self.cabinet_door_max_tensor = self.cabinet_door_max_tensor.repeat_interleave(
-                self.env_per_cabinet, dim=0
+                self.env_per_cabinet,
+                dim=0,
             )
 
             self.cabinet_door_edge_min_l = torch.zeros_like(self.cabinet_door_min_tensor)
@@ -594,7 +647,8 @@ class FreightFrankaCloseDrawer(BaseTask):
         # close door or drawer
         door_reward = self.cabinet_dof_coef * self.cabinet_dof_tensor[:, 0]
         action_penalty = torch.sum(
-            (self.pos_act[:, :7] - self.franka_dof_tensor[:, :7, 0]) ** 2, dim=-1
+            (self.pos_act[:, :7] - self.franka_dof_tensor[:, :7, 0]) ** 2,
+            dim=-1,
         )
 
         d = torch.norm(self.hand_tip_pos - handle_pos, p=2, dim=-1)
@@ -611,7 +665,7 @@ class FreightFrankaCloseDrawer(BaseTask):
 
         diff_from_success = torch.abs(
             self.cabinet_dof_tensor_spec[:, :, 0]
-            - self.success_dof_states.view(self.cabinet_num, -1)
+            - self.success_dof_states.view(self.cabinet_num, -1),
         ).view(-1)
         success = diff_from_success < 0.01
         success_bonus = success
@@ -671,7 +725,7 @@ class FreightFrankaCloseDrawer(BaseTask):
                     - self.franka_dof_lower_limits_tensor[:joints]
                 )
             )
-            - 1
+            - 1,
         )
         # joint dof velocity
         state[:, joints : joints * 2].copy_(self.franka_dof_tensor[:, :joints, 1])
@@ -680,17 +734,18 @@ class FreightFrankaCloseDrawer(BaseTask):
         # hand
         state[:, joints * 2 + 2 : joints * 2 + 15].copy_(
             relative_pose(self.franka_root_tensor, self.hand_rigid_body_tensor).view(
-                self.env_num, -1
-            )
+                self.env_num,
+                -1,
+            ),
         )
         # actions
         state[:, joints * 2 + 15 : joints * 3 + 15].copy_(self.actions[:, :joints])
 
         state[:, joints * 3 + 15 : joints * 3 + 15 + 3].copy_(
-            self.franka_root_tensor[:, 0:3] - self.cabinet_handle_pos_tensor
+            self.franka_root_tensor[:, 0:3] - self.cabinet_handle_pos_tensor,
         )
         state[:, joints * 3 + 15 + 3 : joints * 3 + 15 + 3 + 3].copy_(
-            self.cabinet_handle_pos_tensor - self.hand_tip_pos
+            self.cabinet_handle_pos_tensor - self.hand_tip_pos,
         )
 
         return state
@@ -720,10 +775,12 @@ class FreightFrankaCloseDrawer(BaseTask):
         self.eff_act[:, -2] = actions[:, -1] * self.franka_dof_max_torque_tensor[-1]  # gripper2
         self.pos_act[:, self.franka_num_dofs] = self.cabinet_dof_target  # door reverse force
         self.gym.set_dof_position_target_tensor(
-            self.sim, gymtorch.unwrap_tensor(self.pos_act.view(-1))
+            self.sim,
+            gymtorch.unwrap_tensor(self.pos_act.view(-1)),
         )
         self.gym.set_dof_actuation_force_tensor(
-            self.sim, gymtorch.unwrap_tensor(self.eff_act.view(-1))
+            self.sim,
+            gymtorch.unwrap_tensor(self.eff_act.view(-1)),
         )
 
     def _draw_line(self, src, dst):
@@ -796,7 +853,8 @@ class FreightFrankaCloseDrawer(BaseTask):
                     self.franka_dof_upper_limits_tensor,
                 )
                 self.intervaledRandom_(
-                    franka_reset_dof_vel_tensor, self.franka_reset_dof_vel_interval
+                    franka_reset_dof_vel_tensor,
+                    self.franka_reset_dof_vel_interval,
                 )
                 self.intervaledRandom_(cabinet_reset_pos_tensor, self.cabinet_reset_position_noise)
                 self.intervaledRandom_(cabinet_reset_rot_tensor, self.cabinet_reset_rotation_noise)
@@ -807,7 +865,8 @@ class FreightFrankaCloseDrawer(BaseTask):
                     self.cabinet_dof_upper_limits_tensor[cabinet_type],
                 )
                 self.intervaledRandom_(
-                    cabinet_reset_dof_vel_tensor, self.cabinet_reset_dof_vel_interval
+                    cabinet_reset_dof_vel_tensor,
+                    self.cabinet_reset_dof_vel_interval,
                 )
 
                 self.dof_state_tensor[env_id].copy_(reset_dof_states)

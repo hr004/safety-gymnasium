@@ -152,13 +152,15 @@ def make(
                 f'that is not in the possible render_modes ({render_modes}).',
             )
 
-    if apply_api_compatibility or (
-        apply_api_compatibility is None and env_spec.apply_api_compatibility
-    ):
-        # If we use the compatibility layer, we treat the render mode explicitly and don't pass it to the env creator
-        render_mode = env_spec_kwargs.pop('render_mode', None)
-    else:
-        render_mode = None
+    # API compatibility layer is no longer available in current gymnasium
+    # if apply_api_compatibility or (
+    #     apply_api_compatibility is None and env_spec.apply_api_compatibility
+    # ):
+    #     # If we use the compatibility layer, we treat the render mode explicitly and don't pass it to the env creator
+    #     render_mode = env_spec_kwargs.pop('render_mode', None)
+    # else:
+    #     render_mode = None
+    render_mode = None
 
     try:
         env = env_creator(**env_spec_kwargs)
@@ -182,9 +184,7 @@ def make(
         nondeterministic=env_spec.nondeterministic,
         max_episode_steps=None,
         order_enforce=False,
-        autoreset=False,
         disable_env_checker=True,
-        apply_api_compatibility=False,
         kwargs=env_spec_kwargs,
         additional_wrappers=(),
         vector_entry_point=env_spec.vector_entry_point,
@@ -203,13 +203,13 @@ def make(
                 f'the saved `EnvSpec` additional wrapper {env_spec_wrapper_spec}',
             )
 
-    # Add step API wrapper
-    if apply_api_compatibility is True or (
-        apply_api_compatibility is None and env_spec.apply_api_compatibility is True
-    ):
-        # EnvCompatibility wrapper is no longer available in current gymnasium
-        # Skip this wrapper for now
-        pass
+    # Add step API wrapper - EnvCompatibility wrapper is no longer available in current gymnasium
+    # if apply_api_compatibility is True or (
+    #     apply_api_compatibility is None and env_spec.apply_api_compatibility is True
+    # ):
+    #     # EnvCompatibility wrapper is no longer available in current gymnasium
+    #     # Skip this wrapper for now
+    #     pass
 
     # Run the environment checker as the lowest level wrapper
     if disable_env_checker is False or (
@@ -227,8 +227,8 @@ def make(
     elif env_spec.max_episode_steps is not None:
         env = SafeTimeLimit(env, env_spec.max_episode_steps)
 
-    # Add the auto-reset wrapper
-    if autoreset is True or (autoreset is None and env_spec.autoreset is True):
+    # Add the auto-reset wrapper - autoreset attribute is no longer available in EnvSpec
+    if autoreset is True:
         env = SafeAutoResetWrapper(env)
 
     for wrapper_spec in env_spec.additional_wrappers[num_prior_wrappers:]:

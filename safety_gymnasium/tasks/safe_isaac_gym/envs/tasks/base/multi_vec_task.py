@@ -6,14 +6,10 @@
 # license agreement from NVIDIA CORPORATION is strictly prohibited.
 
 import copy
-from tabnanny import process_tokens
-from tracemalloc import start
 
 import numpy as np
 import torch
 from gymnasium import spaces
-from isaacgym import gymtorch
-from isaacgym.torch_utils import to_torch
 
 
 # VecEnv Wrapper for ShadowHand
@@ -47,7 +43,7 @@ class ShadowHandMultiVecTask:
             spaces.Box(low=-np.Inf, high=np.Inf, shape=(self.nums_share_observations,))
             for _ in range(self.num_agents)
         ]
-        '''
+        """
         self.hand_dof_index_dict = {
             "WRJ": [0, 1],
             "FFJ": [2, 3, 4, 5],
@@ -57,7 +53,7 @@ class ShadowHandMultiVecTask:
             "THJ": [19, 20, 21, 22, 23],
         }
         actuated_dof_indices: [ 0,  1,  2,  3,  4,  6,  7,  8, 10, 11, 12, 14, 15, 16, 17, 19, 20, 21, 22, 23]
-        '''
+        """
 
         self.hand_dof_index_dict = [
             [0, 1],
@@ -113,7 +109,7 @@ class ShadowHandMultiVecTask:
                     high=np.ones(len(agent_dof_index)) * clip_actions,
                 )
                 for agent_dof_index in self.agent_actuated_dof_index
-            ]
+            ],
         )
 
     # def process_sub_agent_obs(self, agent_dof_index, agent_finger_index, obs):
@@ -190,7 +186,9 @@ class ShadowHandMultiVecTaskPython(ShadowHandMultiVecTask):
         obs_buf = torch.clamp(self.task.obs_buf, -self.clip_obs, self.clip_obs).to(self.rl_device)
         # self.process_sub_agent_obs(self.agent_dof_index, self.agent_finger_index, obs_buf)
         hand_obs.append(
-            torch.cat([obs_buf[:, : self.num_hand_obs], obs_buf[:, 2 * self.num_hand_obs :]], dim=1)
+            torch.cat(
+                [obs_buf[:, : self.num_hand_obs], obs_buf[:, 2 * self.num_hand_obs :]], dim=1,
+            ),
         )
         hand_obs.append(
             torch.cat(
@@ -199,7 +197,7 @@ class ShadowHandMultiVecTaskPython(ShadowHandMultiVecTask):
                     obs_buf[:, 2 * self.num_hand_obs :],
                 ],
                 dim=1,
-            )
+            ),
         )
         state_buf = torch.clamp(self.task.obs_buf, -self.clip_obs, self.clip_obs)
         rewards = self.task.rew_buf.unsqueeze(-1).to(self.rl_device)
@@ -250,7 +248,9 @@ class ShadowHandMultiVecTaskPython(ShadowHandMultiVecTask):
         hand_obs = []
         obs_buf = torch.clamp(self.task.obs_buf, -self.clip_obs, self.clip_obs)
         hand_obs.append(
-            torch.cat([obs_buf[:, : self.num_hand_obs], obs_buf[:, 2 * self.num_hand_obs :]], dim=1)
+            torch.cat(
+                [obs_buf[:, : self.num_hand_obs], obs_buf[:, 2 * self.num_hand_obs :]], dim=1,
+            ),
         )
         hand_obs.append(
             torch.cat(
@@ -259,7 +259,7 @@ class ShadowHandMultiVecTaskPython(ShadowHandMultiVecTask):
                     obs_buf[:, 2 * self.num_hand_obs :],
                 ],
                 dim=1,
-            )
+            ),
         )
         state_buf = torch.clamp(self.task.obs_buf, -self.clip_obs, self.clip_obs)
 
@@ -321,7 +321,7 @@ class FreightFrankaMultiVecTask:
                     low=np.ones((9,)) * self.clip_actions_low[3:12].cpu().numpy(),
                     high=np.ones((9,)) * self.clip_actions_high[3:12].cpu().numpy(),
                 ),
-            ]
+            ],
         )
 
     def step(self, actions):
@@ -391,7 +391,7 @@ class FreightFrankaMultiVecTaskPython(FreightFrankaMultiVecTask):
                     obs_buf[:, 24:],
                 ],
                 dim=1,
-            )
+            ),
         )
         sub_agent_obs.append(
             torch.cat(
@@ -401,7 +401,7 @@ class FreightFrankaMultiVecTaskPython(FreightFrankaMultiVecTask):
                     obs_buf[:, 24:],
                 ],
                 dim=1,
-            )
+            ),
         )
         state_buf = obs_buf
         rewards = rew_buf.unsqueeze(-1).to(self.rl_device)
@@ -457,7 +457,7 @@ class FreightFrankaMultiVecTaskPython(FreightFrankaMultiVecTask):
                     obs_buf[:, 24:],
                 ],
                 dim=1,
-            )
+            ),
         )
         sub_agent_obs.append(
             torch.cat(
@@ -467,7 +467,7 @@ class FreightFrankaMultiVecTaskPython(FreightFrankaMultiVecTask):
                     obs_buf[:, 24:],
                 ],
                 dim=1,
-            )
+            ),
         )
         state_buf = self.task.obs_buf
 
