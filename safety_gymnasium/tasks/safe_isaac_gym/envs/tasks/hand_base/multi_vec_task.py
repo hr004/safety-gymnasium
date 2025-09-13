@@ -6,14 +6,10 @@
 # license agreement from NVIDIA CORPORATION is strictly prohibited.
 
 import copy
-from tabnanny import process_tokens
-from tracemalloc import start
 
 import numpy as np
 import torch
 from gymnasium import spaces
-from isaacgym import gymtorch
-from isaacgym.torch_utils import to_torch
 
 from safety_gymnasium.tasks.safe_isaac_gym.envs.tasks.hand_base.base_task import BaseTask
 
@@ -48,7 +44,7 @@ class MultiVecTask:
             spaces.Box(low=-np.Inf, high=np.Inf, shape=(self.nums_share_observations,))
             for _ in range(self.num_agents)
         ]
-        '''
+        """
         self.hand_dof_index_dict = {
             "WRJ": [0, 1],
             "FFJ": [2, 3, 4, 5],
@@ -58,7 +54,7 @@ class MultiVecTask:
             "THJ": [19, 20, 21, 22, 23],
         }
         actuated_dof_indices: [ 0,  1,  2,  3,  4,  6,  7,  8, 10, 11, 12, 14, 15, 16, 17, 19, 20, 21, 22, 23]
-        '''
+        """
 
         self.hand_dof_index_dict = [
             [0, 1],
@@ -114,7 +110,7 @@ class MultiVecTask:
                     high=np.ones(len(agent_dof_index)) * clip_actions,
                 )
                 for agent_dof_index in self.agent_actuated_dof_index
-            ]
+            ],
         )
 
     def step(self, actions):
@@ -174,7 +170,7 @@ class MultiVecTaskPython(MultiVecTask):
         hand_obs = []
         obs_buf = torch.clamp(self.task.obs_buf, -self.clip_obs, self.clip_obs).to(self.rl_device)
         hand_obs.append(
-            torch.cat([obs_buf[:, : self.num_hand_obs], obs_buf[:, 2 * self.num_hand_obs :]], dim=1)
+            torch.cat([obs_buf[:, : self.num_hand_obs], obs_buf[:, 2 * self.num_hand_obs :]], dim=1),
         )
         hand_obs.append(
             torch.cat(
@@ -183,7 +179,7 @@ class MultiVecTaskPython(MultiVecTask):
                     obs_buf[:, 2 * self.num_hand_obs :],
                 ],
                 dim=1,
-            )
+            ),
         )
         state_buf = torch.clamp(self.task.obs_buf, -self.clip_obs, self.clip_obs)
 
@@ -231,7 +227,7 @@ class MultiVecTaskPython(MultiVecTask):
         hand_obs = []
         obs_buf = torch.clamp(self.task.obs_buf, -self.clip_obs, self.clip_obs)
         hand_obs.append(
-            torch.cat([obs_buf[:, : self.num_hand_obs], obs_buf[:, 2 * self.num_hand_obs :]], dim=1)
+            torch.cat([obs_buf[:, : self.num_hand_obs], obs_buf[:, 2 * self.num_hand_obs :]], dim=1),
         )
         hand_obs.append(
             torch.cat(
@@ -240,7 +236,7 @@ class MultiVecTaskPython(MultiVecTask):
                     obs_buf[:, 2 * self.num_hand_obs :],
                 ],
                 dim=1,
-            )
+            ),
         )
         state_buf = torch.clamp(self.task.obs_buf, -self.clip_obs, self.clip_obs)
 

@@ -7,8 +7,6 @@
 
 import os
 import random
-import sys
-from ast import arg
 
 import numpy as np
 import torch
@@ -38,7 +36,7 @@ def warn_task_name():
 
 def warn_algorithm_name():
     raise Exception(
-        'Unrecognized algorithm!\nAlgorithm should be one of: [ppo, happo, hatrpo, mappo]'
+        'Unrecognized algorithm!\nAlgorithm should be one of: [ppo, happo, hatrpo, mappo]',
     )
 
 
@@ -77,163 +75,163 @@ def retrieve_cfg(args, use_rlg_config=False):
             f'cfg/{args.algo}/config.yaml',
             'cfg/shadow_hand_over.yaml',
         )
-    elif args.task == 'ShadowHandCatchOverarm':
+    if args.task == 'ShadowHandCatchOverarm':
         return (
             os.path.join(args.logdir, f'shadow_hand_catch_overarm/{args.algo}/{args.algo}'),
             f'cfg/{args.algo}/config.yaml',
             'cfg/shadow_hand_catch_overarm.yaml',
         )
-    elif args.task == 'ShadowHandCatchUnderarm':
+    if args.task == 'ShadowHandCatchUnderarm':
         return (
             os.path.join(args.logdir, f'shadow_hand_catch_underarm/{args.algo}/{args.algo}'),
             f'cfg/{args.algo}/config.yaml',
             'cfg/shadow_hand_catch_underarm.yaml',
         )
-    elif args.task == 'ShadowHandTwoCatchUnderarm':
+    if args.task == 'ShadowHandTwoCatchUnderarm':
         return (
             os.path.join(args.logdir, f'shadow_hand_two_catch_underarm/{args.algo}/{args.algo}'),
             f'cfg/{args.algo}/config.yaml',
             'cfg/shadow_hand_two_catch_underarm.yaml',
         )
-    elif args.task == 'ShadowHandCatchAbreast':
+    if args.task == 'ShadowHandCatchAbreast':
         return (
             os.path.join(args.logdir, f'shadow_hand_catch_abreast/{args.algo}/{args.algo}'),
             f'cfg/{args.algo}/config.yaml',
             'cfg/shadow_hand_catch_abreast.yaml',
         )
-    elif args.task == 'ShadowHandReOrientation':
+    if args.task == 'ShadowHandReOrientation':
         return (
             os.path.join(args.logdir, f'shadow_hand_re_orientation/{args.algo}/{args.algo}'),
             f'cfg/{args.algo}/config.yaml',
             'cfg/shadow_hand_re_orientation.yaml',
         )
-    elif args.task == 'ShadowHandOverOverarm':
+    if args.task == 'ShadowHandOverOverarm':
         return (
             os.path.join(args.logdir, f'shadow_hand_over_overarm/{args.algo}/{args.algo}'),
             f'cfg/{args.algo}/config.yaml',
             'cfg/shadow_hand_over_overarm.yaml',
         )
-    elif args.task == 'OneFrankaCabinet':
+    if args.task == 'OneFrankaCabinet':
         return (
             os.path.join(args.logdir, f'franka_cabinet/{args.algo}/{args.algo}'),
             f'cfg/{args.algo}/config.yaml',
             'cfg/franka_cabinet.yaml',
         )
-    elif args.task == 'ShadowHandLiftOverarm':
+    if args.task == 'ShadowHandLiftOverarm':
         return (
             os.path.join(args.logdir, f'shadow_hand_lift_overarm/{args.algo}/{args.algo}'),
             f'cfg/{args.algo}/lift_config.yaml',
             'cfg/shadow_hand_lift_overarm.yaml',
         )
-    elif args.task == 'ShadowHandLiftUnderarm':
+    if args.task == 'ShadowHandLiftUnderarm':
         return (
             os.path.join(args.logdir, f'shadow_hand_lift_underarm/{args.algo}/{args.algo}'),
             f'cfg/{args.algo}/lift_config.yaml',
             'cfg/shadow_hand_lift_underarm.yaml',
         )
-    elif args.task == 'ShadowHandLift':
+    if args.task == 'ShadowHandLift':
         return (
             os.path.join(args.logdir, f'shadow_hand_lift/{args.algo}/{args.algo}'),
             f'cfg/{args.algo}/lift_config.yaml',
             'cfg/shadow_hand_lift.yaml',
         )
-    elif args.task == 'Humanoid':
+    if args.task == 'Humanoid':
         return (
             os.path.join(args.logdir, f'humanoid/{args.algo}/{args.algo}'),
             f'cfg/{args.algo}/humanoid_config.yaml',
             'cfg/humanoid.yaml',
         )
-    elif args.task == 'ShadowHandThrowAbreast':
+    if args.task == 'ShadowHandThrowAbreast':
         return (
             os.path.join(args.logdir, f'shadow_hand_throw_abreast/{args.algo}/{args.algo}'),
             f'cfg/{args.algo}/config.yaml',
             'cfg/shadow_hand_throw_abreast.yaml',
         )
-    elif args.task == 'ShadowHandCatchOver2Underarm':
+    if args.task == 'ShadowHandCatchOver2Underarm':
         return (
             os.path.join(args.logdir, f'shadow_hand_catch_over2underarm/{args.algo}/{args.algo}'),
             f'cfg/{args.algo}/config.yaml',
             'cfg/shadow_hand_catch_over2underarm.yaml',
         )
-    elif args.task == 'ShadowHandTest':
+    if args.task == 'ShadowHandTest':
         return (
             os.path.join(args.logdir, f'shadow_hand_test/{args.algo}/{args.algo}'),
             f'cfg/{args.algo}/config.yaml',
             'cfg/shadow_hand_test.yaml',
         )
-    elif args.task == 'ShadowHandLiftUnderarm2':
+    if args.task == 'ShadowHandLiftUnderarm2':
         return (
             os.path.join(args.logdir, f'shadow_hand_lift_underarm2/{args.algo}/{args.algo}'),
             f'cfg/{args.algo}/config.yaml',
             'cfg/shadow_hand_lift_underarm2.yaml',
         )
-    elif args.task == 'ShadowHandBottleCap':
+    if args.task == 'ShadowHandBottleCap':
         return (
             os.path.join(args.logdir, f'shadow_hand_bottle_cap/{args.algo}/{args.algo}'),
             f'cfg/{args.algo}/config.yaml',
             'cfg/shadow_hand_bottle_cap.yaml',
         )
-    elif args.task == 'ShadowHandDoorCloseInward':
+    if args.task == 'ShadowHandDoorCloseInward':
         return (
             os.path.join(args.logdir, f'shadow_hand_door_close_inward/{args.algo}/{args.algo}'),
             f'cfg/{args.algo}/config.yaml',
             'cfg/shadow_hand_door_close_inward.yaml',
         )
-    elif args.task == 'ShadowHandDoorCloseOutward':
+    if args.task == 'ShadowHandDoorCloseOutward':
         return (
             os.path.join(args.logdir, f'shadow_hand_door_close_outward/{args.algo}/{args.algo}'),
             f'cfg/{args.algo}/config.yaml',
             'cfg/shadow_hand_door_close_outward.yaml',
         )
-    elif args.task == 'ShadowHandDoorOpenInward':
+    if args.task == 'ShadowHandDoorOpenInward':
         return (
             os.path.join(args.logdir, f'shadow_hand_door_open_inward/{args.algo}/{args.algo}'),
             f'cfg/{args.algo}/config.yaml',
             'cfg/shadow_hand_door_open_inward.yaml',
         )
-    elif args.task == 'ShadowHandDoorOpenOutward':
+    if args.task == 'ShadowHandDoorOpenOutward':
         return (
             os.path.join(args.logdir, f'shadow_hand_door_open_outward/{args.algo}/{args.algo}'),
             f'cfg/{args.algo}/config.yaml',
             'cfg/shadow_hand_door_open_outward.yaml',
         )
-    elif args.task == 'ShadowHandKettle':
+    if args.task == 'ShadowHandKettle':
         return (
             os.path.join(args.logdir, f'shadow_hand_kettle/{args.algo}/{args.algo}'),
             f'cfg/{args.algo}/config.yaml',
             'cfg/shadow_hand_kettle.yaml',
         )
-    elif args.task == 'ShadowHandPen':
+    if args.task == 'ShadowHandPen':
         return (
             os.path.join(args.logdir, f'shadow_hand_pen/{args.algo}/{args.algo}'),
             f'cfg/{args.algo}/config.yaml',
             'cfg/shadow_hand_pen.yaml',
         )
-    elif args.task == 'ShadowHandBlockStack':
+    if args.task == 'ShadowHandBlockStack':
         return (
             os.path.join(args.logdir, f'shadow_hand_block_stack/{args.algo}/{args.algo}'),
             f'cfg/{args.algo}/config.yaml',
             'cfg/shadow_hand_block_stack.yaml',
         )
-    elif args.task == 'ShadowHandSwitch':
+    if args.task == 'ShadowHandSwitch':
         return (
             os.path.join(args.logdir, f'shadow_hand_switch/{args.algo}/{args.algo}'),
             f'cfg/{args.algo}/config.yaml',
             'cfg/shadow_hand_switch.yaml',
         )
-    elif args.task == 'ShadowHandOver_Safe_joint':
+    if args.task == 'ShadowHandOver_Safe_joint':
         return (
             os.path.join(args.logdir, f'ShadowHandOver_Safe_joint/{args.algo}/{args.algo}'),
             f'cfg/{args.algo}/config.yaml',
             'cfg/ShadowHandOver_Safe_joint.yaml',
         )
-    elif args.task == 'ShadowHandOver_Safe_finger':
+    if args.task == 'ShadowHandOver_Safe_finger':
         return (
             os.path.join(args.logdir, f'ShadowHandOver_Safe_finger/{args.algo}/{args.algo}'),
             f'cfg/{args.algo}/config.yaml',
             'cfg/ShadowHandOver_Safe_finger.yaml',
         )
-    elif args.task == 'ShadowHandCatchOver2Underarm_Safe_finger':
+    if args.task == 'ShadowHandCatchOver2Underarm_Safe_finger':
         return (
             os.path.join(
                 args.logdir,
@@ -242,7 +240,7 @@ def retrieve_cfg(args, use_rlg_config=False):
             f'cfg/{args.algo}/config.yaml',
             'cfg/ShadowHandCatchOver2underarm_Safe_finger.yaml',
         )
-    elif args.task == 'ShadowHandCatchOver2Underarm_Safe_joint':
+    if args.task == 'ShadowHandCatchOver2Underarm_Safe_joint':
         return (
             os.path.join(
                 args.logdir,
@@ -252,8 +250,7 @@ def retrieve_cfg(args, use_rlg_config=False):
             'cfg/ShadowHandCatchOver2underarm_Safe_joint.yaml',
         )
 
-    else:
-        warn_task_name()
+    warn_task_name()
 
 
 def load_cfg(args, use_rlg_config=False):
@@ -546,17 +543,17 @@ def get_args(benchmark=False, use_rlg_config=False):
     if use_rlg_config == False:
         if args.horovod:
             print(
-                'Distributed multi-gpu training with Horovod is not supported by rl-pytorch. Use rl_games for distributed training.'
+                'Distributed multi-gpu training with Horovod is not supported by rl-pytorch. Use rl_games for distributed training.',
             )
         if args.steps_num != -1:
             print(
-                'Setting number of simulation steps per iteration from command line is not supported by rl-pytorch.'
+                'Setting number of simulation steps per iteration from command line is not supported by rl-pytorch.',
             )
         if args.minibatch_size != -1:
             print('Setting minibatch size from command line is not supported by rl-pytorch.')
         if args.checkpoint != 'Base':
             raise ValueError(
-                '--checkpoint is not supported by rl-pytorch. Please use --resume <iteration number>'
+                '--checkpoint is not supported by rl-pytorch. Please use --resume <iteration number>',
             )
 
     # use custom parameters if provided by user

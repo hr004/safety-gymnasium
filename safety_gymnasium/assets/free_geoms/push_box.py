@@ -57,7 +57,7 @@ class PushBox(FreeGeom):  # pylint: disable=too-many-instance-attributes
                 'density': self.density,
                 'group': self.group,
                 'rgba': self.color,
-            }]
+            }],
         }
 
     def _specific_agent_config(self):

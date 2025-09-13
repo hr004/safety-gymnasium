@@ -148,8 +148,7 @@ class AbstractSPOCTaskSampler(TaskSampler):
             except Exception as e:
                 if 'Unity process has exited' in e.args[0]:
                     raise TaskSamplerInInvalidStateError('Controller has closed.')
-                else:
-                    raise
+                raise
         else:
             return self._given_controller
 

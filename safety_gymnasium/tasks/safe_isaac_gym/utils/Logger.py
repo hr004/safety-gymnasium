@@ -1,13 +1,12 @@
 import atexit
 import datetime
-import json
 import os
 
 import numpy as np
 
 
 color2num = dict(
-    gray=30, red=31, green=32, yellow=33, blue=34, magenta=35, cyan=36, white=37, crimson=38
+    gray=30, red=31, green=32, yellow=33, blue=34, magenta=35, cyan=36, white=37, crimson=38,
 )
 
 
@@ -37,7 +36,7 @@ class Logger:
         self.output_dir = os.path.join(self.output_dir)
         if os.path.exists(self.output_dir):
             print(
-                'Warning: Log dir %s already exists! Storing info there anyway.' % self.output_dir
+                'Warning: Log dir %s already exists! Storing info there anyway.' % self.output_dir,
             )
         else:
             os.makedirs(self.output_dir)
@@ -66,7 +65,7 @@ class Logger:
                 'iteration' % key
             )
         assert key not in self.log_current_row, (
-            'You already set %s this iteration. Maybe you forgot to call ' 'dump_tabular()' % key
+            'You already set %s this iteration. Maybe you forgot to call dump_tabular()' % key
         )
         self.log_current_row[key] = val
 
@@ -115,7 +114,7 @@ class EpochLogger(Logger):
         Provide an arbitrary number of keyword arguments with numerical values.
         """
         for k, v in kwargs.items():
-            if not (k in self.epoch_dict.keys()):
+            if k not in self.epoch_dict.keys():
                 self.epoch_dict[k] = []
             self.epoch_dict[k].append(v)
 

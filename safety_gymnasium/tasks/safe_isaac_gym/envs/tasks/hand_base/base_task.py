@@ -6,7 +6,6 @@
 # license agreement from NVIDIA CORPORATION is strictly prohibited.
 
 import operator
-import os
 import random
 import sys
 from copy import deepcopy
@@ -56,10 +55,10 @@ class BaseTask:
 
         # allocate buffers
         self.obs_buf = torch.zeros(
-            (self.num_envs, self.num_obs), device=self.device, dtype=torch.float
+            (self.num_envs, self.num_obs), device=self.device, dtype=torch.float,
         )
         self.states_buf = torch.zeros(
-            (self.num_envs, self.num_states), device=self.device, dtype=torch.float
+            (self.num_envs, self.num_states), device=self.device, dtype=torch.float,
         )
         self.rew_buf = torch.zeros(self.num_envs, device=self.device, dtype=torch.float)
         self.reset_buf = torch.ones(self.num_envs, device=self.device, dtype=torch.long)
@@ -92,7 +91,7 @@ class BaseTask:
             self.viewer = self.gym.create_viewer(self.sim, gymapi.CameraProperties())
             self.gym.subscribe_viewer_keyboard_event(self.viewer, gymapi.KEY_ESCAPE, 'QUIT')
             self.gym.subscribe_viewer_keyboard_event(
-                self.viewer, gymapi.KEY_V, 'toggle_viewer_sync'
+                self.viewer, gymapi.KEY_V, 'toggle_viewer_sync',
             )
 
             # set the camera position based on up axis
@@ -271,7 +270,7 @@ class BaseTask:
                 if dist == 'gaussian':
                     mu, var = dr_params[nonphysical_param]['range']
                     mu_corr, var_corr = dr_params[nonphysical_param].get(
-                        'range_correlated', [0.0, 0.0]
+                        'range_correlated', [0.0, 0.0],
                     )
 
                     if op_type == 'additive':
@@ -298,7 +297,7 @@ class BaseTask:
                             params['corr'] = corr
                         corr = corr * params['var_corr'] + params['mu_corr']
                         return op(
-                            tensor, corr + torch.randn_like(tensor) * params['var'] + params['mu']
+                            tensor, corr + torch.randn_like(tensor) * params['var'] + params['mu'],
                         )
 
                     self.dr_randomizations[nonphysical_param] = {
@@ -312,7 +311,7 @@ class BaseTask:
                 elif dist == 'uniform':
                     lo, hi = dr_params[nonphysical_param]['range']
                     lo_corr, hi_corr = dr_params[nonphysical_param].get(
-                        'range_correlated', [0.0, 0.0]
+                        'range_correlated', [0.0, 0.0],
                     )
 
                     if op_type == 'additive':
@@ -395,14 +394,14 @@ class BaseTask:
                                 n,
                                 gymapi.MESH_VISUAL,
                                 gymapi.Vec3(
-                                    random.uniform(0, 1), random.uniform(0, 1), random.uniform(0, 1)
+                                    random.uniform(0, 1), random.uniform(0, 1), random.uniform(0, 1),
                                 ),
                             )
                         continue
                     if prop_name == 'scale':
                         attr_randomization_params = prop_attrs
                         sample = generate_random_samples(
-                            attr_randomization_params, 1, self.last_step, None
+                            attr_randomization_params, 1, self.last_step, None,
                         )
                         og_scale = 1
                         if attr_randomization_params['operation'] == 'scaling':
@@ -423,10 +422,10 @@ class BaseTask:
                                 smpl = None
                                 if self.actor_params_generator is not None:
                                     smpl, extern_offsets[env_id] = get_attr_val_from_sample(
-                                        extern_sample, extern_offsets[env_id], p, attr
+                                        extern_sample, extern_offsets[env_id], p, attr,
                                     )
                                 apply_random_samples(
-                                    p, og_p, attr, attr_randomization_params, self.last_step, smpl
+                                    p, og_p, attr, attr_randomization_params, self.last_step, smpl,
                                 )
                     else:
                         if self.first_randomization:
@@ -435,7 +434,7 @@ class BaseTask:
                             smpl = None
                             if self.actor_params_generator is not None:
                                 smpl, extern_offsets[env_id] = get_attr_val_from_sample(
-                                    extern_sample, extern_offsets[env_id], prop, attr
+                                    extern_sample, extern_offsets[env_id], prop, attr,
                                 )
                             apply_random_samples(
                                 prop,
@@ -485,5 +484,4 @@ def get_attr_val_from_sample(sample, offset, prop, attr):
     if isinstance(prop, np.ndarray):
         smpl = sample[offset : offset + prop[attr].shape[0]]
         return smpl, offset + prop[attr].shape[0]
-    else:
-        return sample[offset], offset + 1
+    return sample[offset], offset + 1

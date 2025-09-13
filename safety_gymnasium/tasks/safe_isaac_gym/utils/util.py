@@ -50,9 +50,7 @@ def get_shape_from_act_space(act_space):
         act_shape = 1
     elif act_space.__class__.__name__ == 'MultiDiscrete':
         act_shape = act_space.shape
-    elif act_space.__class__.__name__ == 'Box':
-        act_shape = act_space.shape[0]
-    elif act_space.__class__.__name__ == 'MultiBinary':
+    elif act_space.__class__.__name__ == 'Box' or act_space.__class__.__name__ == 'MultiBinary':
         act_shape = act_space.shape[0]
     else:  # agar
         act_shape = act_space[0].shape[0] + 1
